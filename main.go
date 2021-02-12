@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	yml := `version: 3.7
+	yml := `version: "3.7"
 services:
 	mysql:
-		image: mysql:8:0
+		image: mysql:8.0
 		environment:
 			MYSQL_DATABASE: app_development
 			MYSQL_USER: app
