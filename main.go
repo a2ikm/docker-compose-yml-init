@@ -19,7 +19,9 @@ type Service struct {
 	Image       string            `yaml:"image"`
 	Environment map[string]string `yaml:"environment"`
 	WorkingDir  string            `yaml:"working_dir"`
+	Command     []string          `yaml:"command"`
 	Volumes     []string          `yaml:"volumes"`
+	Ports       []string          `yaml:"ports"`
 	DependsOn   []string          `yaml:"depends_on"`
 	EnvFile     []string          `yaml:"env_file"`
 }
@@ -36,9 +38,20 @@ func main() {
 			"app": {
 				Image:      "ruby:3.0.0",
 				WorkingDir: "/app",
+				Command: []string{
+					"bundle",
+					"exec",
+					"rails",
+					"server",
+					"--binding",
+					"0.0.0.0",
+				},
 				Volumes: []string{
 					".:/app:cached",
 					"bundle:/usr/local/bundle:delegated",
+				},
+				Ports: []string{
+					"3000:3000",
 				},
 				DependsOn: []string{
 					"postgres",
