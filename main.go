@@ -51,6 +51,7 @@ func main() {
 				Volumes: []string{
 					".:/app:cached",
 					"bundle:/usr/local/bundle:delegated",
+					"tmp:/app/tmp",
 				},
 				Ports: []string{
 					"3000:3000",
@@ -100,6 +101,9 @@ func main() {
 		},
 		Volumes: map[string]Volume{
 			"bundle": {
+				Driver: "local",
+			},
+			"tmp": {
 				Driver: "local",
 			},
 		},
