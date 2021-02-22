@@ -16,14 +16,15 @@ type Document struct {
 
 // Service wraps each service
 type Service struct {
-	Image       string            `yaml:"image"`
-	Environment map[string]string `yaml:"environment"`
-	WorkingDir  string            `yaml:"working_dir"`
-	Command     []string          `yaml:"command"`
-	Volumes     []string          `yaml:"volumes"`
-	Ports       []string          `yaml:"ports"`
-	DependsOn   []string          `yaml:"depends_on"`
-	EnvFile     []string          `yaml:"env_file"`
+	ContainerName string            `yaml:"container_name"`
+	Image         string            `yaml:"image"`
+	Environment   map[string]string `yaml:"environment"`
+	WorkingDir    string            `yaml:"working_dir"`
+	Command       []string          `yaml:"command"`
+	Volumes       []string          `yaml:"volumes"`
+	Ports         []string          `yaml:"ports"`
+	DependsOn     []string          `yaml:"depends_on"`
+	EnvFile       []string          `yaml:"env_file"`
 }
 
 // Volume wraps each volume
@@ -36,8 +37,9 @@ func main() {
 		Version: "3.8",
 		Services: map[string]Service{
 			"app": {
-				Image:      "ruby:3.0.0",
-				WorkingDir: "/app",
+				ContainerName: "app",
+				Image:         "ruby:3.0.0",
+				WorkingDir:    "/app",
 				Command: []string{
 					"bundle",
 					"exec",
@@ -54,25 +56,45 @@ func main() {
 					"3000:3000",
 				},
 				DependsOn: []string{
+					"mysql",
 					"postgres",
+					"yaichi",
 				},
 				EnvFile: []string{
 					"app.env",
 				},
 			},
 			"mysql": {
-				Image: "mysql:8.0",
+				ContainerName: "mysql",
+				Image:         "mysql:8.0",
 				Environment: map[string]string{
 					"MYSQL_DATABASE": "app_development",
 					"MYSQL_USER":     "app",
 					"MYSQL_PASSWORD": "password",
 				},
+				DependsOn: []string{
+					"yaichi",
+				},
 			},
 			"postgres": {
-				Image: "postgres:13.2-alpine",
+				ContainerName: "postgres",
+				Image:         "postgres:13.2-alpine",
 				Environment: map[string]string{
 					"POSTGRES_USER":     "app",
 					"POSTGRES_PASSWORD": "password",
+				},
+				DependsOn: []string{
+					"yaichi",
+				},
+			},
+			"yaichi": {
+				ContainerName: "yaichi",
+				Image:         "mtsmfm/yaichi:1.7.0",
+				Ports: []string{
+					"80:3000",
+				},
+				Volumes: []string{
+					"/var/run/docker.sock:/var/run/docker.sock",
 				},
 			},
 		},
